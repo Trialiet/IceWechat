@@ -1,4 +1,4 @@
-package cn.icedoge.model.wechat;
+package cn.icedoge.model.wechat.xml;
 
 /**
  * Created by Trialiet on 2016/10/19.

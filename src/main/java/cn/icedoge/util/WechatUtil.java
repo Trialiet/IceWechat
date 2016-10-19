@@ -1,8 +1,8 @@
 package cn.icedoge.util;
 
-import cn.icedoge.model.AccessToken;
-import cn.icedoge.model.wechat.Menu;
-import cn.icedoge.model.wechat.WechatResponse;
+import cn.icedoge.model.wechat.json.AccessToken;
+import cn.icedoge.model.wechat.xml.Menu;
+import cn.icedoge.model.wechat.json.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -21,6 +23,8 @@ import java.util.Arrays;
 /**
  * Created by Trialiet on 2016/10/19.
  */
+
+@Component
 public class WechatUtil {
     private static Logger logger = Logger.getLogger(WechatUtil.class);
     private static final String TOKEN = "wechat";
@@ -30,7 +34,7 @@ public class WechatUtil {
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
     private static String CREATE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
 
-    private static Object HttpGetHandler(String url, String name){
+    private Object HttpGetHandler(String url, String name){
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         try {
@@ -53,7 +57,7 @@ public class WechatUtil {
         return null;
     }
 
-    private static WechatResponse HttpPostHandler(String url, String jsonData) throws IOException {
+    private WechatResponse HttpPostHandler(String url, String jsonData) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-type", "application/json; charset=utf-8");
@@ -72,7 +76,7 @@ public class WechatUtil {
         return msg;
     }
 
-    public static Long createMenu(Menu menu, AccessToken accessToken){
+    public Long createMenu(Menu menu, AccessToken accessToken){
         String url = CREATE_MENU_URL.replace("ACCESS_TOKEN", accessToken.getAccess_token());
         try {
             String json = new ObjectMapper().writeValueAsString(menu);
@@ -84,11 +88,11 @@ public class WechatUtil {
         return -1L;
     }
 
-    public static AccessToken getAccessToken(String appid, String secret)
+    public AccessToken getAccessToken(String appid, String secret)
     {
         String url = ACCESS_TOKEN_URL.replace("APPID", appid).replace("SECRET", secret);
         try {
-            AccessToken accessToken = (AccessToken) HttpGetHandler(url, "cn.icedoge.model.AccessToken");
+            AccessToken accessToken = (AccessToken) HttpGetHandler(url, "cn.icedoge.model.wechat.json.AccessToken");
             return accessToken;
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,7 +100,7 @@ public class WechatUtil {
         return null;
     }
 
-    public static boolean check(String signature, Long timestamp, Long nonce){
+    public boolean check(String signature, Long timestamp, Long nonce){
         String[] temp = {TOKEN, timestamp+"", nonce+""};
         Arrays.sort(temp);
         String str = temp[0] + temp[1] + temp[2];
@@ -107,7 +111,7 @@ public class WechatUtil {
         return false;
     }
 
-    private static String encrypt(String s){
+    private String encrypt(String s){
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(s.getBytes("UTF-8"));
@@ -118,7 +122,7 @@ public class WechatUtil {
         return null;
     }
 
-    private static String getFormattedText(byte[] bytes) {
+    private String getFormattedText(byte[] bytes) {
         int len = bytes.length;
         StringBuilder buf = new StringBuilder(len * 2);
         // 把密文转换成十六进制的字符串形式
