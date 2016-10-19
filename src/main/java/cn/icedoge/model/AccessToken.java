@@ -1,13 +1,13 @@
 package cn.icedoge.model;
 
+import cn.icedoge.model.wechat.WechatResponse;
+
 /**
  * Created by Trialiet on 2016/10/18.
  */
-public class AccessToken {
+public class AccessToken extends WechatResponse{
     private String access_token;
-    private String expire_in;
-    private String errmsg;
-    private int errcode;
+    private String expires_in;
 
     public String getAccess_token() {
         return access_token;
@@ -17,27 +17,11 @@ public class AccessToken {
         this.access_token = access_token;
     }
 
-    public String getExpire_in() {
-        return expire_in;
+    public String getExpires_in() {
+        return expires_in;
     }
 
-    public void setExpire_in(String expire_in) {
-        this.expire_in = expire_in;
-    }
-
-    public String getErrmsg() {
-        return errmsg;
-    }
-
-    public void setErrmsg(String errmsg) {
-        this.errmsg = errmsg;
-    }
-
-    public int getErrcode() {
-        return errcode;
-    }
-
-    public void setErrcode(int errcode) {
-        this.errcode = errcode;
+    public void setExpires_in(String expire_in) {
+        this.expires_in = expire_in;
     }
 }
