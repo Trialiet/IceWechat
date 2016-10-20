@@ -27,14 +27,10 @@ import java.util.Arrays;
 @Component
 public class WechatUtil {
     private static Logger logger = Logger.getLogger(WechatUtil.class);
-    private static final String TOKEN = "wechat";
-    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
-            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
     private static String CREATE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
 
-    private Object HttpGetHandler(String url, String name){
+    private WechatResponse HttpGetHandler(String url){
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         try {
@@ -45,11 +41,10 @@ public class WechatUtil {
                 return null;
             }
             HttpEntity entity = response.getEntity();
-            Object o = new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(name));
-            logger.debug(o.toString());
+            WechatResponse wechatResponse = new ObjectMapper().readValue(EntityUtils.toString(entity), WechatResponse.class);
             response.close();
             client.close();
-            return o;
+            return wechatResponse;
         }catch (Exception e){
             logger.debug("Something wrong");
             e.printStackTrace();
@@ -81,7 +76,7 @@ public class WechatUtil {
         try {
             String json = new ObjectMapper().writeValueAsString(menu);
             WechatResponse response = HttpPostHandler(url, json);
-            return response.getErrcode();
+            return response != null ? response.getErrcode() : -1L;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,44 +87,10 @@ public class WechatUtil {
     {
         String url = ACCESS_TOKEN_URL.replace("APPID", appid).replace("SECRET", secret);
         try {
-            AccessToken accessToken = (AccessToken) HttpGetHandler(url, "cn.icedoge.model.wechat.json.AccessToken");
-            return accessToken;
+            return (AccessToken) HttpGetHandler(url);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public boolean check(String signature, Long timestamp, Long nonce){
-        String[] temp = {TOKEN, timestamp+"", nonce+""};
-        Arrays.sort(temp);
-        String str = temp[0] + temp[1] + temp[2];
-        String result = encrypt(str);
-        if (result.equals(signature.toLowerCase())){
-            return true;
-        }
-        return false;
-    }
-
-    private String encrypt(String s){
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            digest.update(s.getBytes("UTF-8"));
-            return getFormattedText(digest.digest());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String getFormattedText(byte[] bytes) {
-        int len = bytes.length;
-        StringBuilder buf = new StringBuilder(len * 2);
-        // 把密文转换成十六进制的字符串形式
-        for (int j = 0; j < len; j++) {
-            buf.append(HEX_DIGITS[(bytes[j] >> 4) & 0x0f]);
-            buf.append(HEX_DIGITS[bytes[j] & 0x0f]);
-        }
-        return buf.toString().toLowerCase();
     }
 }

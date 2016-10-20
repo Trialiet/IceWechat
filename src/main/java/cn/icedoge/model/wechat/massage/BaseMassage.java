@@ -7,10 +7,10 @@ import java.lang.reflect.Method;
  * Created by admin on 2016/10/19.
  */
 public class BaseMassage {
-    protected String ToUserName;
-    protected String FromUserName;
-    protected String MsgType;
-    protected String MsgId;
+    private String ToUserName;
+    private String FromUserName;
+    private String MsgType;
+    private String MsgId;
     private String CreateTime;
 
     public String getToUserName() {
@@ -37,10 +37,6 @@ public class BaseMassage {
         MsgType = msgType;
     }
 
-    public String getMsgId() {
-        return MsgId;
-    }
-
     public void setMsgId(String msgId) {
         MsgId = msgId;
     }
@@ -56,7 +52,7 @@ public class BaseMassage {
         stringBuilder.append("<xml>");
         try {
             for (Method method : methods) {
-                if (method.getName().contains("get") && !method.getName().contains("MsgId") && !method.getName().contains("Class")) {
+                if (method.getName().contains("get") && !method.getName().contains("Class")) {
                     String name = method.getName().substring(3);
                     String str = (String) method.invoke(this);
                     stringBuilder.append("<").append(name);

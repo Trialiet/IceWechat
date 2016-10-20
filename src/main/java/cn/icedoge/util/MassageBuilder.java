@@ -15,9 +15,9 @@ import java.util.Map;
 /**
  * Created by Trialiet on 2016/10/12.
  */
-public class XMLParser {
+public class MassageBuilder {
 
-    public static BaseMassage parse(ServletInputStream inputStream) throws IOException{
+    public static BaseMassage fromInputStream(ServletInputStream inputStream) throws IOException{
         Map map = new HashMap<String, Object>();
         BaseMassage msg = null;
         Class c = null;
