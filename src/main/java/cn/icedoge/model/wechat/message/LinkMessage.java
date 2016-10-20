@@ -1,13 +1,19 @@
-package cn.icedoge.model.wechat.massage;
+package cn.icedoge.model.wechat.message;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by admin on 2016/10/19.
  */
-public class LinkMassage extends BaseMassage {
+
+@XmlRootElement(name = "xml")
+public class LinkMessage extends BaseMessage {
     private String Title;
     private String Description;
     private String Url;
 
+    @XmlElement
     public String getTitle() {
         return Title;
     }
@@ -16,6 +22,7 @@ public class LinkMassage extends BaseMassage {
         Title = title;
     }
 
+    @XmlElement
     public String getDescription() {
         return Description;
     }
@@ -24,6 +31,7 @@ public class LinkMassage extends BaseMassage {
         Description = description;
     }
 
+    @XmlElement
     public String getUrl() {
         return Url;
     }

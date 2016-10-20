@@ -1,18 +1,26 @@
-package cn.icedoge.model.wechat.massage;
+package cn.icedoge.model.wechat.message;
 
-import java.lang.reflect.Field;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
  * Created by admin on 2016/10/19.
  */
-public class BaseMassage {
+@XmlRootElement(name = "xml")
+public class BaseMessage implements Serializable{
     private String ToUserName;
     private String FromUserName;
     private String MsgType;
     private String MsgId;
     private String CreateTime;
 
+    public BaseMessage(){
+        this.CreateTime = String.valueOf(System.currentTimeMillis()/1000L);
+    }
+
+    @XmlElement
     public String getToUserName() {
         return ToUserName;
     }
@@ -21,6 +29,7 @@ public class BaseMassage {
         ToUserName = toUserName;
     }
 
+    @XmlElement
     public String getFromUserName() {
         return FromUserName;
     }
@@ -29,6 +38,7 @@ public class BaseMassage {
         FromUserName = fromUserName;
     }
 
+    @XmlElement
     public String getMsgType() {
         return MsgType;
     }
@@ -43,6 +53,11 @@ public class BaseMassage {
 
     public void setCreateTime(String createTime) {
         CreateTime = createTime;
+    }
+
+    @XmlElement
+    public String getCreateTime() {
+        return CreateTime;
     }
 
     public String toXML() {

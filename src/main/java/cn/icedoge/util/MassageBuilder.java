@@ -1,6 +1,6 @@
 package cn.icedoge.util;
 
-import cn.icedoge.model.wechat.massage.*;
+import cn.icedoge.model.wechat.message.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -17,9 +17,9 @@ import java.util.Map;
  */
 public class MassageBuilder {
 
-    public static BaseMassage fromInputStream(ServletInputStream inputStream) throws IOException{
+    public static BaseMessage fromInputStream(ServletInputStream inputStream) throws IOException{
         Map map = new HashMap<String, Object>();
-        BaseMassage msg = null;
+        BaseMessage msg = null;
         Class c = null;
         String type = "";
         String str = inputStream2String(inputStream);
@@ -31,33 +31,33 @@ public class MassageBuilder {
             Element root = document.getRootElement();
             Element msgType = root.element("MsgType");
             switch (msgType.getText()){
-                case "text" : type = "cn.icedoge.model.wechat.massage.TextMassage";
+                case "text" : type = "cn.icedoge.model.wechat.message.TextMessage";
                     c = Class.forName(type);
-                    msg = (TextMassage) c.newInstance();
+                    msg = (TextMessage) c.newInstance();
                     break;
-                case "image" : type = "cn.icedoge.model.wechat.massage.ImageMassage";
+                case "image" : type = "cn.icedoge.model.wechat.message.ImageMessage";
                     c = Class.forName(type);
-                    msg = (ImageMassage) c.newInstance();
+                    msg = (ImageMessage) c.newInstance();
                     break;
-                case "voice" : type = "cn.icedoge.model.wechat.massage.VoiceMassage";
+                case "voice" : type = "cn.icedoge.model.wechat.message.VoiceMessage";
                     c = Class.forName(type);
-                    msg = (VoiceMassage) c.newInstance();
+                    msg = (VoiceMessage) c.newInstance();
                     break;
-                case "video" : type = "cn.icedoge.model.wechat.massage.VideoMassage";
+                case "video" : type = "cn.icedoge.model.wechat.message.VideoMessage";
                     c = Class.forName(type);
-                    msg = (VideoMassage) c.newInstance();
+                    msg = (VideoMessage) c.newInstance();
                     break;
-                case "location" : type = "cn.icedoge.model.wechat.massage.LocationMassage";
+                case "location" : type = "cn.icedoge.model.wechat.message.LocationMessage";
                     c = Class.forName(type);
-                    msg = (LocationMassage) c.newInstance();
+                    msg = (LocationMessage) c.newInstance();
                     break;
-                case "link" : type = "cn.icedoge.model.wechat.massage.LinkMassage";
+                case "link" : type = "cn.icedoge.model.wechat.message.LinkMessage";
                     c = Class.forName(type);
-                    msg = (LinkMassage) c.newInstance();
+                    msg = (LinkMessage) c.newInstance();
                     break;
-                case "event" : type = "cn.icedoge.model.wechat.massage.EventMassage";
+                case "event" : type = "cn.icedoge.model.wechat.message.EventMessage";
                     c = Class.forName(type);
-                    msg = (EventMassage) c.newInstance();
+                    msg = (EventMessage) c.newInstance();
                 default : break;
             }
             Iterator iterator = root.elementIterator();

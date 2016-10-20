@@ -2,8 +2,8 @@ package cn.icedoge.service;
 
 
 import cn.icedoge.model.wechat.json.AccessToken;
-import cn.icedoge.model.wechat.massage.BaseMassage;
-import cn.icedoge.model.wechat.massage.TextMassage;
+import cn.icedoge.model.wechat.message.BaseMessage;
+import cn.icedoge.model.wechat.message.TextMessage;
 import cn.icedoge.model.wechat.xml.Menu;
 import cn.icedoge.util.WechatUtil;
 import cn.icedoge.util.MassageBuilder;
@@ -27,11 +27,11 @@ public class WechatService {
         util.createMenu(menu, accessToken);
     }
 
-    public BaseMassage requestHandle(HttpServletRequest request) throws Exception {
-        BaseMassage msg = MassageBuilder.fromInputStream(request.getInputStream());
+    public BaseMessage requestHandle(HttpServletRequest request) throws Exception {
+        BaseMessage msg = MassageBuilder.fromInputStream(request.getInputStream());
         String localName = msg.getToUserName();
         String openid = msg.getFromUserName();
-        TextMassage textMassage = new TextMassage();
+        TextMessage textMassage = new TextMessage();
         textMassage.setToUserName(openid);
         textMassage.setFromUserName(localName);
         textMassage.setMsgType("text");

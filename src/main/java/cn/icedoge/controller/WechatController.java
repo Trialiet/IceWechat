@@ -1,12 +1,15 @@
 package cn.icedoge.controller;
 
 import cn.icedoge.model.wechat.Wechat;
-import cn.icedoge.model.wechat.massage.TextMassage;
+import cn.icedoge.model.wechat.message.BaseMessage;
+import cn.icedoge.model.wechat.message.TextMessage;
 import cn.icedoge.service.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,31 +25,30 @@ public class WechatController {
     private WechatService wechatService;
 
     @RequestMapping(method = {RequestMethod.GET})
-    public void checkSignature(Wechat wechat, PrintWriter writer) throws IOException {
-        if(wechat.check()){
-            writer.print(wechat.getEchostr());
-        }else {
-            writer.print("Error");
+    @ResponseBody
+    public String checkSignature(Wechat wechat) throws IOException {
+        if(wechat.check()) return wechat.getEchostr();
+        else {
+            return "Invalid Access";
         }
-        writer.flush();
-        writer.close();
     }
 
     @RequestMapping(method = {RequestMethod.POST})
-    public void dispose(HttpServletRequest request, HttpServletResponse response)
+    @ResponseBody
+    public String dispose(Wechat wechat, HttpServletRequest request)
             throws IOException{
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter writer = response.getWriter();
+        if(!wechat.check()){
+            return "Invalid Access";
+        }
         try {
-            TextMassage reply = (TextMassage) wechatService.requestHandle(request);
-            writer.print(reply.toXML());
-            writer.flush();
+            BaseMessage reply = wechatService.requestHandle(request);
+            return reply.toXML();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            writer.close();
         }
+        return "Error";
     }
 
     public void setWechatService(WechatService wechatService) {

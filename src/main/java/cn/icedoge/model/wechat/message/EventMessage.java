@@ -1,9 +1,13 @@
-package cn.icedoge.model.wechat.massage;
+package cn.icedoge.model.wechat.message;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by admin on 2016/10/19.
  */
-public class EventMassage extends BaseMassage {
+
+@XmlRootElement(name = "xml")
+public class EventMessage extends BaseMessage {
     private String Event;
     private String EventKey;
 

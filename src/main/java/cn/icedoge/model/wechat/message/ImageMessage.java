@@ -1,12 +1,18 @@
-package cn.icedoge.model.wechat.massage;
+package cn.icedoge.model.wechat.message;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by admin on 2016/10/19.
  */
-public class ImageMassage extends BaseMassage {
+
+@XmlRootElement(name = "xml")
+public class ImageMessage extends BaseMessage {
     private String PicUrl;
     private String MediaId;
 
+    @XmlElement
     public String getPicUrl() {
         return PicUrl;
     }
@@ -15,6 +21,7 @@ public class ImageMassage extends BaseMassage {
         PicUrl = picUrl;
     }
 
+    @XmlElement
     public String getMediaId() {
         return MediaId;
     }

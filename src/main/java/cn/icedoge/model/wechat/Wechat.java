@@ -1,7 +1,5 @@
 package cn.icedoge.model.wechat;
 
-import cn.icedoge.model.wechat.massage.BaseMassage;
-
 import java.security.MessageDigest;
 import java.util.Arrays;
 
@@ -17,6 +15,7 @@ public class Wechat {
     private Long nonce;
     private String signature;
     private String echostr;
+    private String openid;
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
@@ -79,5 +78,13 @@ public class Wechat {
             buf.append(HEX_DIGITS[bytes[j] & 0x0f]);
         }
         return buf.toString().toLowerCase();
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 }
