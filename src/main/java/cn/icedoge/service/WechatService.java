@@ -1,6 +1,7 @@
 package cn.icedoge.service;
 
 
+import cn.icedoge.dao.ConfigDao;
 import cn.icedoge.model.wechat.json.AccessToken;
 import cn.icedoge.model.wechat.message.BaseMessage;
 import cn.icedoge.model.wechat.message.TextMessage;
@@ -19,16 +20,19 @@ public class WechatService {
 
     @Autowired
     private WechatUtil util;
-    private static final String appid = "wx1aaad9abb1e3e1b3";
-    private static final String secret = "8a2888a41b3662ee9ae4b152bfd6f46e";
+    @Autowired
+    private ConfigDao configDao;
+    private static final String APPID = "wx1aaad9abb1e3e1b3";
+    private static final String SECRET = "8a2888a41b3662ee9ae4b152bfd6f46e";
 
     public void createMenu(Menu menu){
-        AccessToken accessToken = util.getAccessToken(appid, secret);
+        AccessToken accessToken = util.getAccessToken(APPID, SECRET);
         util.createMenu(menu, accessToken);
     }
 
     public BaseMessage requestHandle(HttpServletRequest request) throws Exception {
         BaseMessage msg = MassageBuilder.fromInputStream(request.getInputStream());
+        String appid = configDao.selectByName("appid");
         String localName = msg.getToUserName();
         String openid = msg.getFromUserName();
         TextMessage textMassage = new TextMessage();
