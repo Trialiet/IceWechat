@@ -32,7 +32,6 @@ public class WechatService {
 
     public BaseMessage requestHandle(HttpServletRequest request) throws Exception {
         BaseMessage msg = MassageBuilder.fromInputStream(request.getInputStream());
-        String appid = configDao.selectByName("appid");
         String localName = msg.getToUserName();
         String openid = msg.getFromUserName();
         TextMessage textMassage = new TextMessage();

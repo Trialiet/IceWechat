@@ -38,14 +38,7 @@ public class Wechat {
     }
 
     public boolean check(){
-        String[] temp = {TOKEN, this.timestamp+"", this.nonce+""};
-        Arrays.sort(temp);
-        String str = temp[0] + temp[1] + temp[2];
-        String result = encrypt(str);
-        if (result.equals(this.signature.toLowerCase())){
-            return true;
-        }
-        return false;
+        return check(TOKEN);
     }
 
     public boolean check(String token){
@@ -53,7 +46,7 @@ public class Wechat {
         Arrays.sort(temp);
         String str = temp[0] + temp[1] + temp[2];
         String result = encrypt(str);
-        if (result.equals(this.signature.toLowerCase())){
+        if (result.equals(signature.toLowerCase())){
             return true;
         }
         return false;

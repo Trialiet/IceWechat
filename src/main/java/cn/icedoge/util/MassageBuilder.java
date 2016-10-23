@@ -1,6 +1,7 @@
 package cn.icedoge.util;
 
 import cn.icedoge.model.wechat.message.*;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -18,11 +19,10 @@ import java.util.Map;
 public class MassageBuilder {
 
     public static BaseMessage fromInputStream(ServletInputStream inputStream) throws IOException{
-        Map map = new HashMap<String, Object>();
         BaseMessage msg = null;
         Class c = null;
         String type = "";
-        String str = inputStream2String(inputStream);
+        String str = IOUtils.toString(inputStream, "UTF-8");
         try {
             if (str.length() <= 0){
                 return null;
@@ -70,14 +70,5 @@ public class MassageBuilder {
             e.printStackTrace();
         }
         return msg;
-    }
-
-    public static String inputStream2String(ServletInputStream in) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int i = -1;
-        while( (i=in.read() ) != -1){
-            baos.write(i);
-        }
-        return baos.toString();
     }
 }

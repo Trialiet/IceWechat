@@ -3,6 +3,9 @@ package cn.icedoge.controller;
 import cn.icedoge.model.wechat.Wechat;
 import cn.icedoge.model.wechat.message.BaseMessage;
 import cn.icedoge.model.wechat.message.TextMessage;
+import cn.icedoge.model.wechat.xml.CommonButton;
+import cn.icedoge.model.wechat.xml.Menu;
+import cn.icedoge.model.wechat.xml.ParentButton;
 import cn.icedoge.service.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,22 @@ public class WechatController {
     @RequestMapping(method = {RequestMethod.GET})
     @ResponseBody
     public String checkSignature(Wechat wechat) throws IOException {
+        CommonButton button1 = new CommonButton();
+        button1.setName("Test1");
+        button1.setType("click");
+        button1.setKey("btn1");
+        CommonButton button2 = new CommonButton();
+        button2.setName("Test2");
+        button2.setType("click");
+        button2.setKey("btn2");
+        CommonButton[] buttons = {button1, button2};
+        ParentButton parentButton = new ParentButton();
+        parentButton.setName("Test");
+        parentButton.setSub_button(buttons);
+        ParentButton[] parentButtons = {parentButton};
+        Menu menu = new Menu();
+        menu.setButton(parentButtons);
+        wechatService.createMenu(menu);
         if(wechat.check()) return wechat.getEchostr();
         else {
             return "Invalid Access";
@@ -46,7 +65,6 @@ public class WechatController {
             return reply.toXML();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
         }
         return "Error";
     }
