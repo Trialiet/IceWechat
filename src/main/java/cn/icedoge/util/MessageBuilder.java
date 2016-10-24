@@ -7,12 +7,41 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import javax.servlet.ServletInputStream;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Trialiet on 2016/10/12.
  */
-public class MassageBuilder {
+public class MessageBuilder {
+    private String toUser = "";
+    private String msgType = "";
+    private static final String TEXT_TYPE = "text";
+    private static final String IMAGE_TYPE = "image";
+    private static final String VOICE_TYPE = "voice";
+    private static final String VIDEO_TYPE = "video";
+    private static final String NEWS_TYPE = "news";
+    private static final String MUSIC_TYPE = "music";
+    private static final String MPNEWS_TYPE = "mpnews";
+
+    public MessageBuilder toUser(String openid){
+        this.toUser = openid;
+        return this;
+    }
+
+    public MessageBuilder msgType(String type){
+        this.msgType = type;
+        return this;
+    }
+
+    public Map build(Object o){
+        Map map = new HashMap<>();
+        map.put("touser", toUser);
+        map.put("msgtype", msgType);
+        map.put(msgType, o);
+        return map;
+    }
 
     public static BaseMessage fromInputStream(ServletInputStream inputStream){
         try {

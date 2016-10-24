@@ -1,9 +1,11 @@
-package cn.icedoge.wechat.json;
+package cn.icedoge.wechat.material;
+
+import cn.icedoge.wechat.json.WechatResponse;
 
 /**
  * Created by Trialiet on 2016/10/20.
  */
-public class News extends WechatResponse{
+public class Article{
     private String title;
     private String thumb_media_id;
     private String author;

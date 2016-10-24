@@ -10,7 +10,7 @@ import cn.icedoge.wechat.message.processor.ContainsRule;
 import cn.icedoge.wechat.xml.Menu;
 import cn.icedoge.util.WechatConfig;
 import cn.icedoge.util.WechatUtil;
-import cn.icedoge.util.MassageBuilder;
+import cn.icedoge.util.MessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ public class WechatService {
     }
 
     public BaseMessage requestHandle(HttpServletRequest request) throws Exception {
-        BaseMessage msg = MassageBuilder.fromInputStream(request.getInputStream());
+        BaseMessage msg = MessageBuilder.fromInputStream(request.getInputStream());
         String openid = msg.getFromUserName();
         MessageFilter filter = new MessageFilter();
         filter.andRule(new ContainsRule(ContainsRule.MSG_TYPE, "event"));

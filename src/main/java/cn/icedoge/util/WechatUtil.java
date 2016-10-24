@@ -17,6 +17,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 /**
@@ -27,19 +29,16 @@ import java.nio.charset.Charset;
 public class WechatUtil {
     private static Logger logger = Logger.getLogger(WechatUtil.class);
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
-    private static String CREATE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
-//    获取永久素材
-    private static String GET_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=ACCESS_TOKEN";
-//    获取素材列表
-    private static String BATCHGET_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=ACCESS_TOKEN";
-
-    private static final int DEFAULT_TYPE = 0;
-    private static final int MATERIAL_LIST_TYPE = 1;
-    @Autowired
-    private ConfigDao configDao;
+    public static final int DEFAULT_TYPE = 0;
+    public static final int MATERIAL_LIST_TYPE = 1;
+    public static final int MEDIA_TYPE = 2;
+    public static final int NEWS_TYPE = 3;
+    public static final int VIDEO_TYPE = 4;
+    public static final int POST_MATERIAL_TYPE = 5;
 
 
-    private WechatResponse HttpGetHandler(String url){
+
+    protected WechatResponse HttpGetHandler(String url){
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         try {
@@ -61,57 +60,55 @@ public class WechatUtil {
         return null;
     }
 
-    private WechatResponse HttpPostHandler(String url, String jsonData) throws Exception {
+    protected WechatResponse HttpPostHandler(String url, String jsonData){
         return HttpPostHandler(url, jsonData, DEFAULT_TYPE);
     }
 
-    private WechatResponse HttpPostHandler(String url, String jsonData, int type) throws Exception {
-        Class c = null;
+    protected WechatResponse HttpPostHandler(String url, String jsonData, int type){
         WechatResponse msg = null;
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-type", "application/json; charset=utf-8");
         post.setHeader("Accept", "application/json");
         post.setEntity(new StringEntity(jsonData, Charset.forName("utf-8")));
-        CloseableHttpResponse response = client.execute(post);
-        if (response.getStatusLine().getStatusCode() != 200){
-            logger.error("Http Post Error");
-            response.close();
-            return null;
+        CloseableHttpResponse response = null;
+        try {
+            response = client.execute(post);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                logger.error("Http Post Error");
+                response.close();
+                return null;
+            }
+            HttpEntity entity = response.getEntity();
+            switch (type) {
+                case DEFAULT_TYPE:
+                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.json.WechatResponse"));
+                    break;
+                case MEDIA_TYPE:
+                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.BaseMedia"));
+                    break;
+                case NEWS_TYPE:
+                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.News"));
+                    break;
+                case VIDEO_TYPE:
+                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.Video"));
+                    break;
+                case POST_MATERIAL_TYPE :
+                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.BaseMedia"));
+                    break;
+            }
+            return msg;
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                response.close();
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        HttpEntity entity = response.getEntity();
-        switch (type){
-            case DEFAULT_TYPE : c = Class.forName("cn.icedoge.wechat.json.WechatResponse");
-                msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), c);
-                break;
-        }
-        response.close();
-        client.close();
         return msg;
-    }
-
-    public WechatResponse getMaterialList(BatchgetMaterialRequest request, String accessToken){
-        String url = BATCHGET_MATERIAL_URL.replace("ACCESS_TOEN", accessToken);
-        try {
-            String data = new ObjectMapper().writeValueAsString(request);
-            return HttpPostHandler(url, data, MATERIAL_LIST_TYPE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public WechatResponse createMenu(Menu menu, AccessToken accessToken){
-        String url = CREATE_MENU_URL.replace("ACCESS_TOKEN", accessToken.getAccess_token());
-        try {
-            String data = new ObjectMapper().writeValueAsString(menu);
-            WechatResponse response = HttpPostHandler(url, data);
-            logger.debug("Create Menu: " + response.getErrcode());
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public AccessToken getAccessToken(String appid, String secret)
