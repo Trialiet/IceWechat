@@ -1,11 +1,14 @@
 package cn.icedoge.service;
 
 
-import cn.icedoge.dao.ConfigDao;
-import cn.icedoge.model.wechat.json.AccessToken;
-import cn.icedoge.model.wechat.message.BaseMessage;
-import cn.icedoge.model.wechat.message.TextMessage;
-import cn.icedoge.model.wechat.xml.Menu;
+import cn.icedoge.wechat.json.AccessToken;
+import cn.icedoge.wechat.message.BaseMessage;
+import cn.icedoge.wechat.message.TextMessage;
+import cn.icedoge.wechat.message.processor.MessageFilter;
+import cn.icedoge.wechat.message.processor.MessageHandler;
+import cn.icedoge.wechat.message.processor.ContainsRule;
+import cn.icedoge.wechat.xml.Menu;
+import cn.icedoge.util.WechatConfig;
 import cn.icedoge.util.WechatUtil;
 import cn.icedoge.util.MassageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,6 @@ public class WechatService {
 
     @Autowired
     private WechatUtil util;
-    @Autowired
-    private ConfigDao configDao;
     private static final String APPID = "wx1aaad9abb1e3e1b3";
     private static final String SECRET = "8a2888a41b3662ee9ae4b152bfd6f46e";
 
@@ -32,13 +33,19 @@ public class WechatService {
 
     public BaseMessage requestHandle(HttpServletRequest request) throws Exception {
         BaseMessage msg = MassageBuilder.fromInputStream(request.getInputStream());
-        String localName = msg.getToUserName();
         String openid = msg.getFromUserName();
-        TextMessage textMassage = new TextMessage();
-        textMassage.setToUserName(openid);
-        textMassage.setFromUserName(localName);
-        textMassage.setMsgType("text");
-        textMassage.setContent(msg.getMsgType());
-        return textMassage;
+        MessageFilter filter = new MessageFilter();
+        filter.andRule(new ContainsRule(ContainsRule.MSG_TYPE, "event"));
+        BaseMessage resp = filter.process(msg, new MessageHandler() {
+            @Override
+            public BaseMessage handle(BaseMessage msg) {
+                TextMessage resp = new TextMessage();
+                resp.setFromUserName(WechatConfig.FROM_USER_NAME);
+                resp.setToUserName(openid);
+                resp.setContent(msg.getMsgType());
+                return resp;
+            }
+        });
+        return resp;
     }
 }

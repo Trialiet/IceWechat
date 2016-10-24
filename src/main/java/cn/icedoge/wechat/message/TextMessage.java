@@ -1,4 +1,4 @@
-package cn.icedoge.model.wechat.message;
+package cn.icedoge.wechat.message;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,6 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TextMessage extends BaseMessage {
 
     private String Content;
+
+    public TextMessage() {
+        super.setMsgType("text");
+    }
 
     @XmlElement
     public String getContent() {

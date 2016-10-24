@@ -1,11 +1,10 @@
 package cn.icedoge.controller;
 
-import cn.icedoge.model.wechat.Wechat;
-import cn.icedoge.model.wechat.message.BaseMessage;
-import cn.icedoge.model.wechat.message.TextMessage;
-import cn.icedoge.model.wechat.xml.CommonButton;
-import cn.icedoge.model.wechat.xml.Menu;
-import cn.icedoge.model.wechat.xml.ParentButton;
+import cn.icedoge.wechat.Wechat;
+import cn.icedoge.wechat.message.BaseMessage;
+import cn.icedoge.wechat.xml.CommonButton;
+import cn.icedoge.wechat.xml.Menu;
+import cn.icedoge.wechat.xml.ParentButton;
 import cn.icedoge.service.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Created by Trialiet on 2016/10/12.

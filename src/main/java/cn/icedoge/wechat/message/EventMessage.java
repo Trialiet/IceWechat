@@ -1,4 +1,4 @@
-package cn.icedoge.model.wechat.message;
+package cn.icedoge.wechat.message;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

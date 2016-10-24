@@ -1,4 +1,4 @@
-package cn.icedoge.model.wechat;
+package cn.icedoge.wechat;
 
 import java.security.MessageDigest;
 import java.util.Arrays;

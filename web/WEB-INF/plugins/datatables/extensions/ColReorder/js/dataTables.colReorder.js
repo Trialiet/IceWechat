@@ -777,7 +777,7 @@ ColReorder.prototype = {
 			{
 				iOrigColumn = columns[i]._ColReorder_iOrigCol;
 
-				/* Column filter */
+				/* Column processor */
 				oState.aoSearchCols[ iOrigColumn ] = aSearchCopy[i];
 
 				/* Visibility */

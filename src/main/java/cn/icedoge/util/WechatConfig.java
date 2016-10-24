@@ -8,6 +8,7 @@ public class WechatConfig {
     private static String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String APP_ID = "APPID";
     private static final String APP_SECRET = "SECRET";
+    public static final String FROM_USER_NAME = "gh_1b5af629a433";
 
     public static String getAppSecret() {
         return APP_SECRET;

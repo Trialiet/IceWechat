@@ -3044,13 +3044,13 @@ var Grid = fc.Grid = RowRenderer.extend({
 				var seg = segs[i];
 				var el = $(node);
 
-				// allow custom filter methods per-type
+				// allow custom processor methods per-type
 				if (segElMethod) {
 					el = segElMethod.call(_this, seg, el);
 				}
 
 				if (el) { // custom filters did not cancel the render
-					el = $(el); // allow custom filter to return raw DOM node
+					el = $(el); // allow custom processor to return raw DOM node
 
 					// correct element type? (would be bad if a non-TD were inserted into a table for example)
 					if (el.is(_this.fillSegTag)) {
@@ -3288,7 +3288,7 @@ Grid.mixin({
 
 	// Renders a background event element, given the default rendering. Called by the fill system.
 	bgEventSegEl: function(seg, el) {
-		return this.view.resolveEventEl(seg.event, el); // will filter through eventRender
+		return this.view.resolveEventEl(seg.event, el); // will processor through eventRender
 	},
 
 
@@ -3546,7 +3546,7 @@ Grid.mixin({
 		if (view.opt('droppable')) { // only listen if this setting is on
 			el = $(ev.target);
 
-			// Test that the dragged element passes the dropAccept selector or filter function.
+			// Test that the dragged element passes the dropAccept selector or processor function.
 			// FYI, the default is "*" (matches all)
 			accept = view.opt('dropAccept');
 			if ($.isFunction(accept) ? accept.call(el[0], el) : el.is(accept)) {

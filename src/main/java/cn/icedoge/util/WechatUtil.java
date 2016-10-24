@@ -1,11 +1,10 @@
 package cn.icedoge.util;
 
 import cn.icedoge.dao.ConfigDao;
-import cn.icedoge.model.wechat.json.AccessToken;
-import cn.icedoge.model.wechat.json.BatchgetMaterialRequest;
-import cn.icedoge.model.wechat.xml.Menu;
-import cn.icedoge.model.wechat.json.WechatResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import cn.icedoge.wechat.json.AccessToken;
+import cn.icedoge.wechat.json.BatchgetMaterialRequest;
+import cn.icedoge.wechat.xml.Menu;
+import cn.icedoge.wechat.json.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,11 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.util.Arrays;
 
 /**
  * Created by Trialiet on 2016/10/19.
@@ -86,7 +81,7 @@ public class WechatUtil {
         }
         HttpEntity entity = response.getEntity();
         switch (type){
-            case DEFAULT_TYPE : c = Class.forName("cn.icedoge.model.wechat.json.WechatResponse");
+            case DEFAULT_TYPE : c = Class.forName("cn.icedoge.wechat.json.WechatResponse");
                 msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), c);
                 break;
         }

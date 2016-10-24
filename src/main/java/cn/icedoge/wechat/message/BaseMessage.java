@@ -1,4 +1,4 @@
-package cn.icedoge.model.wechat.message;
+package cn.icedoge.wechat.message;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -77,7 +77,6 @@ public class BaseMessage implements Serializable{
                     stringBuilder.append(name).append(">");
                 }
             }
-            stringBuilder.append("<CreateTime>").append(System.currentTimeMillis()/1000L).append("</CreateTime>");
             stringBuilder.append("</xml>");
         } catch (Exception e) {
             e.printStackTrace();

@@ -1099,7 +1099,7 @@
 	 *  @param {object} settings dataTables settings object
 	 *  @param {int} rowIdx aoData row id
 	 *  @param {int} colIdx Column index
-	 *  @param {string} type data get type ('display', 'type' 'filter' 'sort')
+	 *  @param {string} type data get type ('display', 'type' 'processor' 'sort')
 	 *  @returns {*} Cell data
 	 *  @memberof DataTable#oApi
 	 */
@@ -1481,7 +1481,7 @@
 	 * @memberof DataTable#oApi
 	 *
 	 * @todo For the modularisation of v1.11 this will need to become a callback, so
-	 *   the sort and filter methods can subscribe to it. That will required
+	 *   the sort and processor methods can subscribe to it. That will required
 	 *   initialisation options for sorting, which is why it is not already baked in
 	 */
 	function _fnInvalidate( settings, rowIdx, src, colIdx )
@@ -2767,11 +2767,11 @@
 			.append( $('<label/>' ).append( str ) );
 	
 		var searchFn = function() {
-			/* Update all other filter input elements for the new display */
+			/* Update all other processor input elements for the new display */
 			var n = features.f;
 			var val = !this.value ? "" : this.value; // mental IE8 fix :-(
 	
-			/* Now do the filter */
+			/* Now do the processor */
 			if ( val != previousSearch.sSearch ) {
 				_fnFilterComplete( settings, {
 					"sSearch": val,
@@ -2828,7 +2828,7 @@
 	
 	
 	/**
-	 * Filter the table using both the global filter and column based filtering
+	 * Filter the table using both the global processor and column based filtering
 	 *  @param {object} oSettings dataTables settings object
 	 *  @param {object} oSearch search information
 	 *  @param {int} [iForce] force a research of the master array (1) or not (undefined or 0)
@@ -2857,11 +2857,11 @@
 		/* In server-side processing all filtering is done by the server, so no point hanging around here */
 		if ( _fnDataSource( oSettings ) != 'ssp' )
 		{
-			/* Global filter */
+			/* Global processor */
 			_fnFilter( oSettings, oInput.sSearch, iForce, fnRegex(oInput), oInput.bSmart, oInput.bCaseInsensitive );
 			fnSaveFilter( oInput );
 	
-			/* Now do the individual column filter */
+			/* Now do the individual column processor */
 			for ( var i=0 ; i<aoPrevSearch.length ; i++ )
 			{
 				_fnFilterColumn( oSettings, aoPrevSearch[i].sSearch, i, fnRegex(aoPrevSearch[i]),
@@ -2917,8 +2917,8 @@
 	/**
 	 * Filter the table on a per-column basis
 	 *  @param {object} oSettings dataTables settings object
-	 *  @param {string} sInput string to filter on
-	 *  @param {int} iColumn column to filter
+	 *  @param {string} sInput string to processor on
+	 *  @param {int} iColumn column to processor
 	 *  @param {bool} bRegex treat search string as a regular expression or not
 	 *  @param {bool} bSmart use smart filtering or not
 	 *  @param {bool} bCaseInsensitive Do case insenstive matching or not
@@ -2947,7 +2947,7 @@
 	/**
 	 * Filter the data table based on user input and draw the table
 	 *  @param {object} settings dataTables settings object
-	 *  @param {string} input string to filter on
+	 *  @param {string} input string to processor on
 	 *  @param {int} force optional - force a research of the master array (1) or not (undefined or 0)
 	 *  @param {bool} regex treat as a regular expression or not
 	 *  @param {bool} smart perform smart filtering or not
@@ -2961,7 +2961,7 @@
 		var displayMaster = settings.aiDisplayMaster;
 		var display, invalidated, i;
 	
-		// Need to take account of custom filtering functions - always filter
+		// Need to take account of custom filtering functions - always processor
 		if ( DataTable.ext.search.length !== 0 ) {
 			force = true;
 		}
@@ -3316,7 +3316,7 @@
 					}
 	
 					// Reset the init display for cookie saving. We've already done
-					// a filter, and therefore cleared it before. So we need to make
+					// a processor, and therefore cleared it before. So we need to make
 					// it appear 'fresh'
 					settings.iInitDisplayStart = iAjaxStart;
 	
@@ -5638,7 +5638,7 @@
 		
 		/**
 		 * Redraw the table
-		 *  @param {bool} [complete=true] Re-filter and resort (if enabled) the table before the draw.
+		 *  @param {bool} [complete=true] Re-processor and resort (if enabled) the table before the draw.
 		 *  @dtopt API
 		 *  @deprecated Since v1.10
 		 *
@@ -5660,11 +5660,11 @@
 		
 		/**
 		 * Filter the input based on data
-		 *  @param {string} sInput String to filter the table on
+		 *  @param {string} sInput String to processor the table on
 		 *  @param {int|null} [iColumn] Column to limit filtering to
 		 *  @param {bool} [bRegex=false] Treat as regular expression or not
 		 *  @param {bool} [bSmart=true] Perform smart filtering or not
-		 *  @param {bool} [bShowGlobal=true] Show the input global filter in it's input box(es)
+		 *  @param {bool} [bShowGlobal=true] Show the input global processor in it's input box(es)
 		 *  @param {bool} [bCaseInsensitive=true] Do case-insensitive matching (true) or not (false)
 		 *  @dtopt API
 		 *  @deprecated Since v1.10
@@ -5673,7 +5673,7 @@
 		 *    $(document).ready(function() {
 		 *      var oTable = $('#example').dataTable();
 		 *
-		 *      // Sometime later - filter...
+		 *      // Sometime later - processor...
 		 *      oTable.fnFilter( 'test string' );
 		 *    } );
 		 */
@@ -7276,7 +7276,7 @@
 	 * Redraw the tables in the current context.
 	 *
 	 * @param {boolean} [reset=true] Reset (default) or hold the current paging
-	 *   position. A full re-sort and re-filter is performed when this method is
+	 *   position. A full re-sort and re-processor is performed when this method is
 	 *   called, which is why the pagination reset is the default action.
 	 * @returns {DataTables.Api} this
 	 */
@@ -7459,7 +7459,7 @@
 	 * automatically re-draw the table when the remote data has been loaded.
 	 *
 	 * @param {boolean} [reset=true] Reset (default) or hold the current paging
-	 *   position. A full re-sort and re-filter is performed when this method is
+	 *   position. A full re-sort and re-processor is performed when this method is
 	 *   called, which is why the pagination reset is the default action.
 	 * @returns {DataTables.Api} this
 	 */
@@ -7579,7 +7579,7 @@
 			opts = {};
 		}
 	
-		// Backwards compatibility for 1.9- which used the terminology filter rather
+		// Backwards compatibility for 1.9- which used the terminology processor rather
 		// than search
 		if ( opts.filter && opts.search === undefined ) {
 			opts.search = opts.filter;
@@ -7732,7 +7732,7 @@
 			}
 	
 			// Selector - jQuery selector string, array of nodes or jQuery object/
-			// As jQuery's .filter() allows jQuery objects to be passed in filter,
+			// As jQuery's .processor() allows jQuery objects to be passed in processor,
 			// it also allows arrays, so this will cope with all three options
 			return $(nodes)
 				.filter( sel )
@@ -9161,7 +9161,7 @@
 	
 	/**
 	 * Template object for the way in which DataTables holds information about
-	 * search information for the global filter and individual column filters.
+	 * search information for the global processor and individual column filters.
 	 *  @namespace
 	 */
 	DataTable.models.oSearch = {
@@ -9391,7 +9391,7 @@
 		 *  @param {array|object} oData The data array/object for the array
 		 *    (i.e. aoData[]._aData)
 		 *  @param {string} sSpecific The specific data type you want to get -
-		 *    'display', 'type' 'filter' 'sort'
+		 *    'display', 'type' 'processor' 'sort'
 		 *  @returns {*} The data for the cell from the given row's data
 		 *  @default null
 		 */
