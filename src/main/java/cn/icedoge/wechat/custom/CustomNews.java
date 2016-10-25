@@ -9,6 +9,14 @@ import java.util.Set;
 public class CustomNews extends BaseCustom {
     private Set news = new HashSet();
 
+    public Set getNews() {
+        return news;
+    }
+
+    public void setNews(Set news) {
+        this.news = news;
+    }
+
     public CustomNews addArticle(CustomArticle article){
         if (news.size() < 10) {
             news.add(article);

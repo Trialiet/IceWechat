@@ -7,15 +7,26 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 
 /**
  * Created by Trialiet on 2016/10/19.
@@ -62,15 +73,20 @@ public class WechatUtil {
 
     protected WechatResponse HttpPostHandler(String path, String jsonData, String type){
         WechatResponse msg = null;
+        CloseableHttpClient client = null;
         String access_token = WechatConfig.getAccessToken();
         String url = path.replace("ACCESS_TOKEN", access_token);
-        CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-type", "application/json; charset=utf-8");
         post.setHeader("Accept", "application/json");
         post.setEntity(new StringEntity(jsonData, Charset.forName("utf-8")));
         CloseableHttpResponse response = null;
         try {
+            if (url.startsWith("https")){
+                client = createSSLInsecureClient();
+            }else {
+                client = HttpClients.createDefault();
+            }
             response = client.execute(post);
             if (response.getStatusLine().getStatusCode() != 200) {
                 logger.error("Http Post Error");
@@ -79,16 +95,20 @@ public class WechatUtil {
             }
             HttpEntity entity = response.getEntity();
             msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
-            if(msg.getErrcode() == 40014 || msg.getErrcode() == 42001 ){
+            if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
                 String newToken = getAccessToken().getAccess_token();
+                logger.debug(newToken);
                 String newUrl = url.replace(access_token, newToken);
                 WechatConfig.setAccessToken(newToken);
+//                post.releaseConnection();
+//                client.close();
                 return HttpPostHandler(newUrl, jsonData, type);
             }
             return msg;
         }catch (Exception e){
             e.printStackTrace();
         }finally {
+            post.releaseConnection();
             try {
                 response.close();
                 client.close();
@@ -109,5 +129,47 @@ public class WechatUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static CloseableHttpClient createSSLInsecureClient() throws GeneralSecurityException {
+        try {
+            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+                @Override
+                public boolean isTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws java.security.cert.CertificateException {
+                    return true;
+                }
+
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            }).build();
+
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, new X509HostnameVerifier() {
+
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+
+                @Override
+                public void verify(String host, SSLSocket ssl)
+                        throws IOException {
+                }
+
+                @Override
+                public void verify(String s, java.security.cert.X509Certificate x509Certificate) throws SSLException {
+
+                }
+
+                @Override
+                public void verify(String host, String[] cns,
+                                   String[] subjectAlts) throws SSLException {
+                }
+
+            });
+            return HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        } catch (GeneralSecurityException e) {
+            throw e;
+        }
     }
 }

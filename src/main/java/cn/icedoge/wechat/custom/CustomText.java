@@ -9,6 +9,14 @@ import java.util.Map;
 public class CustomText extends BaseCustom {
     private Map text = new HashMap();
 
+    public Map getText() {
+        return text;
+    }
+
+    public void setText(Map text) {
+        this.text = text;
+    }
+
     public void setContent(String content){
         text.put("content", content);
     }
