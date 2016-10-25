@@ -1,7 +1,5 @@
 package cn.icedoge.wechat.material;
 
-import cn.icedoge.wechat.json.WechatResponse;
-
 import java.util.HashSet;
 import java.util.Set;
 

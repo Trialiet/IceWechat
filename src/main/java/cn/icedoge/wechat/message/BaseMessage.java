@@ -1,5 +1,7 @@
 package cn.icedoge.wechat.message;
 
+import cn.icedoge.wechat.message.processor.MessageFilter;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -15,10 +17,6 @@ public class BaseMessage implements Serializable{
     private String MsgType;
     private String MsgId;
     private String CreateTime;
-
-    public BaseMessage(){
-        this.CreateTime = String.valueOf(System.currentTimeMillis()/1000L);
-    }
 
     @XmlElement
     public String getToUserName() {
@@ -82,5 +80,17 @@ public class BaseMessage implements Serializable{
             e.printStackTrace();
         }
         return stringBuilder.toString();
+    }
+
+    public BaseMessage route(MessageFilter[] filters){
+        for(MessageFilter filter : filters){
+            BaseMessage reply = filter.process(this);
+            if (reply != null) return reply;
+        }
+        return null;
+    }
+
+    public BaseMessage route(MessageFilter filter){
+        return route(new MessageFilter[] {filter});
     }
 }

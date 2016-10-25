@@ -1,4 +1,4 @@
-package cn.icedoge.wechat.xml;
+package cn.icedoge.wechat.menu;
 
 /**
  * Created by Trialiet on 2016/10/19.

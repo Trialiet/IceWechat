@@ -1,6 +1,6 @@
 package cn.icedoge.wechat.material;
 
-import cn.icedoge.wechat.json.WechatResponse;
+import cn.icedoge.wechat.WechatResponse;
 
 /**
  * Created by Trialiet on 2016/10/21.

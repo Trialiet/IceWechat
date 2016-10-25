@@ -1,4 +1,4 @@
-package cn.icedoge.util;
+package cn.icedoge.wechat.util;
 
 import cn.icedoge.wechat.message.*;
 import org.apache.commons.io.IOUtils;

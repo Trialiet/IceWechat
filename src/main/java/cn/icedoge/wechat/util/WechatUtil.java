@@ -1,10 +1,7 @@
-package cn.icedoge.util;
+package cn.icedoge.wechat.util;
 
-import cn.icedoge.dao.ConfigDao;
-import cn.icedoge.wechat.json.AccessToken;
-import cn.icedoge.wechat.json.BatchgetMaterialRequest;
-import cn.icedoge.wechat.xml.Menu;
-import cn.icedoge.wechat.json.WechatResponse;
+import cn.icedoge.wechat.sys.AccessToken;
+import cn.icedoge.wechat.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -15,7 +12,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,12 +25,12 @@ import java.nio.charset.Charset;
 public class WechatUtil {
     private static Logger logger = Logger.getLogger(WechatUtil.class);
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
-    public static final int DEFAULT_TYPE = 0;
-    public static final int MATERIAL_LIST_TYPE = 1;
-    public static final int MEDIA_TYPE = 2;
-    public static final int NEWS_TYPE = 3;
-    public static final int VIDEO_TYPE = 4;
-    public static final int POST_MATERIAL_TYPE = 5;
+    public static final String DEFAULT_TYPE = "cn.icedoge.wechat.WechatResponse";
+//    public static final int MATERIAL_LIST_TYPE = 1;
+    public static final String MEDIA_TYPE = "cn.icedoge.wechat.material.BaseMedia";
+    public static final String NEWS_TYPE = "cn.icedoge.wechat.material.News";
+    public static final String VIDEO_TYPE = "cn.icedoge.wechat.material.Video";
+    public static final String POST_MATERIAL_TYPE = "cn.icedoge.wechat.material.BaseMedia";
 
 
 
@@ -64,7 +60,7 @@ public class WechatUtil {
         return HttpPostHandler(url, jsonData, DEFAULT_TYPE);
     }
 
-    protected WechatResponse HttpPostHandler(String url, String jsonData, int type){
+    protected WechatResponse HttpPostHandler(String url, String jsonData, String type){
         WechatResponse msg = null;
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
@@ -80,22 +76,12 @@ public class WechatUtil {
                 return null;
             }
             HttpEntity entity = response.getEntity();
-            switch (type) {
-                case DEFAULT_TYPE:
-                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.json.WechatResponse"));
-                    break;
-                case MEDIA_TYPE:
-                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.BaseMedia"));
-                    break;
-                case NEWS_TYPE:
-                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.News"));
-                    break;
-                case VIDEO_TYPE:
-                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.Video"));
-                    break;
-                case POST_MATERIAL_TYPE :
-                    msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName("cn.icedoge.wechat.material.BaseMedia"));
-                    break;
+            msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
+            if(msg.getErrcode() == 40014 ){
+                String newToken = getAccessToken().getAccess_token();
+                String newUrl = url.replace(WechatConfig.getAccessToken(), newToken);
+                WechatConfig.setAccessToken(newToken);
+                return HttpPostHandler(newUrl, jsonData, type);
             }
             return msg;
         }catch (Exception e){
@@ -111,9 +97,10 @@ public class WechatUtil {
         return msg;
     }
 
-    public AccessToken getAccessToken(String appid, String secret)
+    public AccessToken getAccessToken()
     {
-        String url = ACCESS_TOKEN_URL.replace("APPID", appid).replace("SECRET", secret);
+        String url = ACCESS_TOKEN_URL.replace("APPID", WechatConfig.getConfig(WechatConfig.APPID))
+                .replace("SECRET", WechatConfig.getConfig(WechatConfig.SECRET));
         try {
             return (AccessToken) HttpGetHandler(url);
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package cn.icedoge.wechat.json;
+package cn.icedoge.wechat;
 
 /**
  * Created by Trialiet on 2016/10/19.

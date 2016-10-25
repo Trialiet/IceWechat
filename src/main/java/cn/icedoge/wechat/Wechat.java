@@ -1,5 +1,11 @@
 package cn.icedoge.wechat;
 
+import cn.icedoge.wechat.message.BaseMessage;
+import cn.icedoge.wechat.util.WechatConfig;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
@@ -16,6 +22,7 @@ public class Wechat {
     private String signature;
     private String echostr;
     private String openid;
+    private BaseMessage message;
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
@@ -35,6 +42,28 @@ public class Wechat {
 
     public void setEchostr(String echostr) {
         this.echostr = echostr;
+    }
+
+    public String reply(BaseMessage msg){
+        if (msg == null){
+            return "";
+        }
+        msg.setFromUserName(message.getToUserName());
+        msg.setToUserName(openid);
+        msg.setCreateTime(String.valueOf(System.currentTimeMillis()/1000L));
+        return msg.toXML();
+    }
+
+    public void reply(BaseMessage msg, HttpServletResponse response){
+        try {
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.write(reply(msg));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean check(){
@@ -79,5 +108,13 @@ public class Wechat {
 
     public void setOpenid(String openid) {
         this.openid = openid;
+    }
+
+    public BaseMessage getMessage() {
+        return message;
+    }
+
+    public void setMessage(BaseMessage message) {
+        this.message = message;
     }
 }

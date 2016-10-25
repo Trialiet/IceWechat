@@ -1,9 +1,11 @@
-package cn.icedoge.wechat.json;
+package cn.icedoge.wechat.sys;
+
+import cn.icedoge.wechat.WechatResponse;
 
 /**
  * Created by Trialiet on 2016/10/18.
  */
-public class AccessToken extends WechatResponse{
+public class AccessToken extends WechatResponse {
     private String access_token;
     private String expires_in;
 

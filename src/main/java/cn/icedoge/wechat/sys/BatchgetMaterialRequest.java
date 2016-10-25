@@ -1,4 +1,4 @@
-package cn.icedoge.wechat.json;
+package cn.icedoge.wechat.sys;
 
 /**
  * Created by admin on 2016/10/23.

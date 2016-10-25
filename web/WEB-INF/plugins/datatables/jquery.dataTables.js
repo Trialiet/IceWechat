@@ -7429,7 +7429,7 @@
 	 *
 	 * @return {object} JSON received from the server.
 	 */
-	_api_register( 'ajax.json()', function () {
+	_api_register( 'ajax.sys()', function () {
 		var ctx = this.context;
 	
 		if ( ctx.length > 0 ) {
@@ -9753,7 +9753,7 @@
 		 *   // Get JSON data from a file via Ajax.
 		 *   // Note DataTables expects data in the form `{ data: [ ...data... ] }` by default).
 		 *   $('#example').dataTable( {
-		 *     "ajax": "data.json"
+		 *     "ajax": "data.sys"
 		 *   } );
 		 *
 		 * @example
@@ -9761,7 +9761,7 @@
 		 *   // `data` to `tableData` (i.e. `{ tableData: [ ...data... ] }`)
 		 *   $('#example').dataTable( {
 		 *     "ajax": {
-		 *       "url": "data.json",
+		 *       "url": "data.sys",
 		 *       "dataSrc": "tableData"
 		 *     }
 		 *   } );
@@ -9771,7 +9771,7 @@
 		 *   // from a plain array rather than an array in an object
 		 *   $('#example').dataTable( {
 		 *     "ajax": {
-		 *       "url": "data.json",
+		 *       "url": "data.sys",
 		 *       "dataSrc": ""
 		 *     }
 		 *   } );
@@ -9782,12 +9782,12 @@
 		 *   // is just a simple example of how the data can be manipulated).
 		 *   $('#example').dataTable( {
 		 *     "ajax": {
-		 *       "url": "data.json",
-		 *       "dataSrc": function ( json ) {
-		 *         for ( var i=0, ien=json.length ; i<ien ; i++ ) {
-		 *           json[i][0] = '<a href="/message/'+json[i][0]+'>View message</a>';
+		 *       "url": "data.sys",
+		 *       "dataSrc": function ( sys ) {
+		 *         for ( var i=0, ien=sys.length ; i<ien ; i++ ) {
+		 *           sys[i][0] = '<a href="/message/'+sys[i][0]+'>View message</a>';
 		 *         }
-		 *         return json;
+		 *         return sys;
 		 *       }
 		 *     }
 		 *   } );
@@ -9796,7 +9796,7 @@
 		 *   // Add data to the request
 		 *   $('#example').dataTable( {
 		 *     "ajax": {
-		 *       "url": "data.json",
+		 *       "url": "data.sys",
 		 *       "data": function ( d ) {
 		 *         return {
 		 *           "extra_search": $('#extra').val()
@@ -9809,7 +9809,7 @@
 		 *   // Send request as POST
 		 *   $('#example').dataTable( {
 		 *     "ajax": {
-		 *       "url": "data.json",
+		 *       "url": "data.sys",
 		 *       "type": "POST"
 		 *     }
 		 *   } );
@@ -13140,7 +13140,7 @@
 		 *   <ul>
 		 *     <li>function:fn - function to call. Takes two parameters, oSettings
 		 *       and the JSON string to save that has been thus far created. Returns
-		 *       a JSON string to be inserted into a json object
+		 *       a JSON string to be inserted into a sys object
 		 *       (i.e. '"param": [ 0, 1, 2]')</li>
 		 *     <li>string:sName - name of callback</li>
 		 *   </ul>
