@@ -11,7 +11,8 @@ public class News extends BaseMedia {
     private Set<Article> news_item = new HashSet<Article>();
 
     public void addArticle(Article article){
-        articles.add(article);
+        if(articles.size() < 8)
+            articles.add(article);
     }
 
     public void setArticles(Set<Article> articles) {

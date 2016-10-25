@@ -13,10 +13,9 @@ public class MenuManager extends WechatUtil {
     private static String CREATE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
 
     public WechatResponse createMenu(Menu menu){
-        String url = CREATE_MENU_URL.replace("ACCESS_TOKEN", WechatConfig.getAccessToken());
         try {
             String data = new ObjectMapper().writeValueAsString(menu);
-            return HttpPostHandler(url, data);
+            return HttpPostHandler(CREATE_MENU_URL, data);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

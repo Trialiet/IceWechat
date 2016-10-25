@@ -60,8 +60,10 @@ public class WechatUtil {
         return HttpPostHandler(url, jsonData, DEFAULT_TYPE);
     }
 
-    protected WechatResponse HttpPostHandler(String url, String jsonData, String type){
+    protected WechatResponse HttpPostHandler(String path, String jsonData, String type){
         WechatResponse msg = null;
+        String access_token = WechatConfig.getAccessToken();
+        String url = path.replace("ACCESS_TOKEN", access_token);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-type", "application/json; charset=utf-8");
@@ -77,9 +79,9 @@ public class WechatUtil {
             }
             HttpEntity entity = response.getEntity();
             msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
-            if(msg.getErrcode() == 40014 ){
+            if(msg.getErrcode() == 40014 || msg.getErrcode() == 42001 ){
                 String newToken = getAccessToken().getAccess_token();
-                String newUrl = url.replace(WechatConfig.getAccessToken(), newToken);
+                String newUrl = url.replace(access_token, newToken);
                 WechatConfig.setAccessToken(newToken);
                 return HttpPostHandler(newUrl, jsonData, type);
             }
