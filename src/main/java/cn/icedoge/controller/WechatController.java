@@ -1,10 +1,6 @@
 package cn.icedoge.controller;
 
 import cn.icedoge.wechat.Wechat;
-import cn.icedoge.wechat.message.BaseMessage;
-import cn.icedoge.wechat.menu.CommonButton;
-import cn.icedoge.wechat.menu.Menu;
-import cn.icedoge.wechat.menu.ParentButton;
 import cn.icedoge.service.WechatService;
 import cn.icedoge.wechat.util.MessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;

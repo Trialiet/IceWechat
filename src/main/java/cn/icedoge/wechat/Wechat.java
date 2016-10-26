@@ -14,7 +14,6 @@ import java.util.Arrays;
  */
 
 public class Wechat {
-    private static final String TOKEN = "wechat";
     private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
     private Long timestamp;
@@ -67,7 +66,7 @@ public class Wechat {
     }
 
     public boolean check(){
-        return check(TOKEN);
+        return check(WechatConfig.getConfig(WechatConfig.TOKEN));
     }
 
     public boolean check(String token){

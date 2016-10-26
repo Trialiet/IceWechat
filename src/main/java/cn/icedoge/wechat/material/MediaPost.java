@@ -10,4 +10,36 @@ public class MediaPost {
     private VideoForm introduction;
     private String type;
     private File file;
+
+    public MediaForm getMedia() {
+        return media;
+    }
+
+    public void setMedia(MediaForm media) {
+        this.media = media;
+    }
+
+    public VideoForm getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(VideoForm introduction) {
+        this.introduction = introduction;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 }

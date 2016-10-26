@@ -7,7 +7,6 @@ import cn.icedoge.wechat.message.BaseMessage;
 import cn.icedoge.wechat.message.TextMessage;
 import cn.icedoge.wechat.message.processor.MessageFilter;
 import cn.icedoge.wechat.message.processor.MessageHandler;
-import cn.icedoge.wechat.message.processor.ContainsRule;
 import cn.icedoge.wechat.util.CustomManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

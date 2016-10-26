@@ -1,5 +1,6 @@
 package cn.icedoge.wechat.util;
 
+import cn.icedoge.wechat.material.MediaPost;
 import cn.icedoge.wechat.sys.AccessToken;
 import cn.icedoge.wechat.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,8 @@ import javax.security.cert.X509Certificate;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Trialiet on 2016/10/19.
