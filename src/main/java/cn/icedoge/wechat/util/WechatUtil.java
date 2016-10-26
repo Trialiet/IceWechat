@@ -1,17 +1,29 @@
 package cn.icedoge.wechat.util;
 
+import cn.icedoge.wechat.material.BaseMedia;
 import cn.icedoge.wechat.material.MediaPost;
 import cn.icedoge.wechat.sys.AccessToken;
 import cn.icedoge.wechat.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -25,6 +37,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
@@ -44,9 +57,7 @@ public class WechatUtil {
     public static final String MEDIA_TYPE = "cn.icedoge.wechat.material.BaseMedia";
     public static final String NEWS_TYPE = "cn.icedoge.wechat.material.News";
     public static final String VIDEO_TYPE = "cn.icedoge.wechat.material.Video";
-    public static final String POST_MATERIAL_TYPE = "cn.icedoge.wechat.material.BaseMedia";
-
-
+    public static final String ADD_NEWS_TYPE = "cn.icedoge.wechat.material.BaseMedia";
 
     protected WechatResponse HttpGetHandler(String url){
         CloseableHttpClient client = HttpClients.createDefault();
@@ -100,11 +111,10 @@ public class WechatUtil {
             msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
             if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
                 String newToken = getAccessToken().getAccess_token();
-                logger.debug(newToken);
                 String newUrl = url.replace(access_token, newToken);
                 WechatConfig.setAccessToken(newToken);
-//                post.releaseConnection();
-//                client.close();
+                post.releaseConnection();
+                client.close();
                 return HttpPostHandler(newUrl, jsonData, type);
             }
             return msg;
@@ -118,6 +128,51 @@ public class WechatUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        return msg;
+    }
+
+    public File GetMaterial(String path, String data){
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        return null;
+    }
+
+    public BaseMedia PostMaterial(String path, File file, String type){
+        BaseMedia msg = null;
+        String access_token = WechatConfig.getAccessToken();
+        String url = path.replace("ACCESS_TOKEN", access_token);
+        HttpPost post = new HttpPost(url);
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        FileBody fileBody = new FileBody(file);
+        builder.addPart("media", fileBody);
+        builder.addPart("access_token", new StringBody(access_token, ContentType.TEXT_PLAIN));
+        builder.addPart("type", new StringBody(type, ContentType.TEXT_PLAIN));
+        HttpEntity entity = builder.build();
+        post.setHeader("Connection", "Keep-Alive");
+        post.setHeader("Cache-Control", "no-cache");
+        post.setEntity(entity);
+        try {
+            CloseableHttpClient client = createSSLInsecureClient();
+            CloseableHttpResponse response = client.execute(post);
+            if (response.getStatusLine().getStatusCode() != 200){
+                logger.debug("Http Connect Error");
+                response.close();
+                return null;
+            }
+            HttpEntity responseEntity = response.getEntity();
+            msg = new ObjectMapper().readValue(EntityUtils.toString(responseEntity), BaseMedia.class);
+            if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
+                String newToken = getAccessToken().getAccess_token();
+                String newUrl = url.replace(access_token, newToken);
+                WechatConfig.setAccessToken(newToken);
+                post.releaseConnection();
+                client.close();
+                return PostMaterial(newUrl, file, type);
+            }
+            return msg;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return msg;
     }
