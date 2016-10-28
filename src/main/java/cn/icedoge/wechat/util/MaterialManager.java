@@ -1,14 +1,18 @@
 package cn.icedoge.wechat.util;
 
+import cn.icedoge.wechat.WechatResponse;
 import cn.icedoge.wechat.material.BaseMedia;
+import cn.icedoge.wechat.material.News;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 
 /**
  * Created by admin on 2016/10/24.
  */
+@Service
 public class MaterialManager extends WechatUtil {
     //    获取永久素材
     private static String GET_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=ACCESS_TOKEN";
@@ -16,32 +20,25 @@ public class MaterialManager extends WechatUtil {
     private static String ADD_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN";
     //    获取素材列表
     private static String BATCHGET_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=ACCESS_TOKEN";
+    private static String DEL_MATERIAL_URL = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=ACCESS_TOKEN";
 
-    private static final String VIDEO_TYPE = "video";
-    private static final String IMAGE_TYPE = "image";
-    private static final String VOICE_TYPE = "voice";
-    private static final String THUMB_TYPE  = "thumb";
-//    public WechatResponse getMaterialList(BatchgetMaterialRequest request){
-//        String url = BATCHGET_MATERIAL_URL.replace("ACCESS_TOKEN", WechatConfig.getAccessToken());
-//        try {
-//            String data = new ObjectMapper().writeValueAsString(request);
-//            return HttpPostHandler(url, data, MATERIAL_LIST_TYPE);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    public static final String VIDEO_TYPE = "video";
+    public static final String IMAGE_TYPE = "image";
+    public static final String VOICE_TYPE = "voice";
+    public static final String THUMB_TYPE  = "thumb";
 
-    public BaseMedia getMaterial(String media_id, String type){
-        try {
-            String data = new ObjectMapper().writeValueAsString(media_id);
-            return (BaseMedia) HttpPostHandler(GET_MATERIAL_URL, data, type);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return null;
+    //只要不是图文消息或视频，直接提交Media ID，返回文件
+    public File getMaterial(String media_id, String savePath){
+        return GetMaterial(GET_MATERIAL_URL, new BaseMedia(media_id), savePath);
     }
 
+    //获取永久图文消息
+    public News getNews(String media_id){
+        String data = "{ \"media_id\" : " + media_id + "}";
+        return (News) HttpPostHandler(GET_MATERIAL_URL, data, NEWS_TYPE);
+    }
+
+    //上传非图文消息或视频类素材，以表单形式上传文件，返回Media ID
     public BaseMedia addMaterial(String filePath, String type){
         File file = new File(filePath);
         if (file == null || type == null || type.equals("")){
@@ -53,13 +50,20 @@ public class MaterialManager extends WechatUtil {
         return PostMaterial(ADD_MATERIAL_URL, file, type);
     }
 
-    public BaseMedia addNews(BaseMedia media){
+    //上传图文类永久素材，返回Media ID
+    public BaseMedia addNews(News news){
         try {
-            String data = new ObjectMapper().writeValueAsString(media);
-            return (BaseMedia) HttpPostHandler(ADD_NEWS_URL, data, ADD_NEWS_TYPE);
+            String data = new ObjectMapper().writeValueAsString(news);
+            return (BaseMedia) HttpPostHandler(ADD_NEWS_URL, data, ADD_MATERIAL_TYPE);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    public WechatResponse delMaterial(String media_id){
+        String data = "{ \"media_id\" : " + media_id + "}";
+        return HttpPostHandler(DEL_MATERIAL_URL, data);
+    }
+
 }

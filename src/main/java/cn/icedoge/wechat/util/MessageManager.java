@@ -14,7 +14,6 @@ public class MessageManager extends WechatUtil {
     private Set touser = new HashSet();
     private String msgtype;
 
-
     public Map getFilter() {
         return filter;
     }

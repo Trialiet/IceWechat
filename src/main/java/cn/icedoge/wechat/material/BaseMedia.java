@@ -9,6 +9,13 @@ public class BaseMedia extends WechatResponse{
     private String media_id;
     private String url;
 
+    public BaseMedia() {
+    }
+
+    public BaseMedia(String media_id) {
+        this.media_id = media_id;
+    }
+
     public String getMedia_id() {
         return media_id;
     }

@@ -1,15 +1,11 @@
 package cn.icedoge.wechat.util;
 
 import cn.icedoge.wechat.material.BaseMedia;
-import cn.icedoge.wechat.material.MediaPost;
 import cn.icedoge.wechat.sys.AccessToken;
 import cn.icedoge.wechat.WechatResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.internal.bind.v2.TODO;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -17,10 +13,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -38,11 +31,11 @@ import javax.net.ssl.SSLSocket;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Trialiet on 2016/10/19.
@@ -53,11 +46,9 @@ public class WechatUtil {
     private static Logger logger = Logger.getLogger(WechatUtil.class);
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
     public static final String DEFAULT_TYPE = "cn.icedoge.wechat.WechatResponse";
-//    public static final int MATERIAL_LIST_TYPE = 1;
-    public static final String MEDIA_TYPE = "cn.icedoge.wechat.material.BaseMedia";
     public static final String NEWS_TYPE = "cn.icedoge.wechat.material.News";
     public static final String VIDEO_TYPE = "cn.icedoge.wechat.material.Video";
-    public static final String ADD_NEWS_TYPE = "cn.icedoge.wechat.material.BaseMedia";
+    public static final String ADD_MATERIAL_TYPE = "cn.icedoge.wechat.material.BaseMedia";
 
     protected WechatResponse HttpGetHandler(String url){
         CloseableHttpClient client = HttpClients.createDefault();
@@ -132,10 +123,43 @@ public class WechatUtil {
         return msg;
     }
 
-    public File GetMaterial(String path, String data){
-
-        CloseableHttpClient client = HttpClients.createDefault();
-        return null;
+    public File GetMaterial(String path, BaseMedia baseMedia, String filePath){
+        String accessToken = WechatConfig.getAccessToken();
+        String url = path.replace("ACCESS_TOKEN", accessToken);
+        File file = null;
+        InputStream stream = null;
+        FileOutputStream fileOutputStream = null;
+        HttpPost post = new HttpPost(url);
+        String mediaId = baseMedia.getMedia_id();
+        try {
+            post.setEntity(new StringEntity(new ObjectMapper().writeValueAsString(baseMedia), Charset.forName("UTF-8")));
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(post);
+            try {
+                String str = response.getFirstHeader("Content-disposition").getValue();
+                String ext = str.substring(str.lastIndexOf("."), str.length() - 1);
+                stream = response.getEntity().getContent();
+                file = new File(filePath + mediaId + ext);
+                fileOutputStream = new FileOutputStream(file);
+                int c = stream.read();
+                while (c != -1) {
+                    fileOutputStream.write(c);
+                    c = stream.read();
+                }
+            }catch (Exception e){
+                logger.debug(e.getMessage());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stream.close();
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 
     public BaseMedia PostMaterial(String path, File file, String type){
@@ -177,7 +201,7 @@ public class WechatUtil {
         return msg;
     }
 
-    public AccessToken getAccessToken()
+    private AccessToken getAccessToken()
     {
         String url = ACCESS_TOKEN_URL.replace("APPID", WechatConfig.getConfig(WechatConfig.APPID))
                 .replace("SECRET", WechatConfig.getConfig(WechatConfig.SECRET));

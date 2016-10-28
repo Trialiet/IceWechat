@@ -19,7 +19,7 @@ public class News extends BaseMedia {
         this.articles = articles;
     }
 
-    public Set<Article> getNews_item() {
+    public Set<Article> getNews() {
         return news_item;
     }
 

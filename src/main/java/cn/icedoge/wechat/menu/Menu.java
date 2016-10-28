@@ -1,16 +1,24 @@
 package cn.icedoge.wechat.menu;
 
+import java.util.Set;
+
 /**
  * Created by Trialiet on 2016/10/19.
  */
 public class Menu {
-    private Button[] button;
+    private Set<Button> button;
 
-    public Button[] getButton() {
+    public void addButton(Button sub_button){
+        if (button.size() < 3){
+            button.add(sub_button);
+        }
+    }
+
+    public Set<Button> getButton() {
         return button;
     }
 
-    public void setButton(Button[] button) {
+    public void setButton(Set<Button> button) {
         this.button = button;
     }
 }
