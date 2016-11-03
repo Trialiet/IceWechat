@@ -3,8 +3,7 @@ IceWechat.iml
 target/
 src/test
 out
-/web/WEB-INF/adminlte/
-/web/WEB-INF/bootstrap/
-/web/WEB-INF/plugins/
+
 classes/
 README.md
+/web/resource/
