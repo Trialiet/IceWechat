@@ -10,6 +10,8 @@ import cn.icedoge.wechat.message.processor.MessageFilter;
 import cn.icedoge.wechat.message.processor.MessageHandler;
 import cn.icedoge.wechat.util.CustomManager;
 import cn.icedoge.wechat.util.MaterialManager;
+import cn.icedoge.wechat.util.WechatConfig;
+import cn.icedoge.wechat.util.WechatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,9 @@ public class WechatService {
     public BaseMessage requestHandle(Wechat wechat) throws Exception {
         BaseMessage recv = wechat.getMessage();
         CustomText text = new CustomText();
-        text.setContent("客服消息");
+        String oauthUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE#wechat_redirect";
+        String url = oauthUrl.replace("APPID", WechatConfig.APPID).replace("SCOPE", "snsapi_base").replace("REDIRECT_URI", "http%3a%2f%2fwww.icedoge.cn%2fadmin");
+        text.setContent("<a href=\"" + url +"\">测试</a>");
         text.setMsgtype("text");
         text.setTouser(wechat.getMessage().getFromUserName());
         customManager.sendMessage(text);

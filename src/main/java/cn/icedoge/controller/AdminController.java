@@ -12,8 +12,8 @@ public class AdminController {
 
     private static Logger logger = Logger.getLogger(AdminController.class);
     @RequestMapping("admin")
-    public String test(){
+    public String test(String code){
         logger.debug("Request index.jsp");
-        return "index";
+        return "test";
     }
 }
