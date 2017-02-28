@@ -13,7 +13,7 @@ public class AdminController {
     private static Logger logger = Logger.getLogger(AdminController.class);
     @RequestMapping("admin")
     public String test(String code){
-        logger.debug("Request index.jsp");
+        logger.debug("Request test.html");
         return "test";
     }
 }
