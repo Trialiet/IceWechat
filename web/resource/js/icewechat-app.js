@@ -25,5 +25,11 @@ app.controller('commonController', function ($scope) {
 });
 
 app.controller('menuController', function ($scope) {
-    $http
+    $scope.message = "Menu Controller"
 });
+
+app.controller('sidebarController', function ($scope) {
+    $scope.isSelected = function () {
+        $scope.isActive = true;
+    }
+})

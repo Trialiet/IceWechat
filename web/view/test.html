@@ -16,7 +16,17 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins
       folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="../resource/adminlte/css/skins/_all-skins.css">
-    <script src="../resource/adminlte/js/app.js"></script>
+    <!-- jQuery 2.2.0 -->
+    <script src="../resource/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="//cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script src="../resource/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="../resource/bootstrap/js/bootstrap.js"></script>
     <!-- Angular -->
     <script src="//cdn.bootcss.com/angular.js/1.6.2/angular.js"></script>
     <!-- Angular UI Router-->
@@ -24,6 +34,7 @@
     <!-- Angular Router-->
     <!--<script src="//cdn.bootcss.com/angular.js/1.6.2/angular-route.js"></script>-->
     <!-- app.js-->
+    <script src="../resource/adminlte/js/app.js"></script>
     <script src="../resource/js/icewechat-app.js"></script>
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
@@ -70,10 +81,10 @@
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a id="systemsettingBtn" href="javascript:void(0)" class="btn btn-default btn-flat">修改密码</a>
+                                    <a href="#" class="btn btn-default btn-flat">修改密码</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="${ctx}${apath}/logout" class="btn btn-default btn-flat">注销</a>
+                                    <a href="#" class="btn btn-default btn-flat">注销</a>
                                 </div>
                             </li>
                         </ul>
@@ -89,7 +100,7 @@
         </nav>
     </header>
     <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
+    <aside class="main-sidebar" ng-controller="sidebarController">
         <!-- Inner sidebar -->
         <section class="sidebar">
             <!-- user panel (Optional) -->
@@ -106,9 +117,9 @@
             <ul class="sidebar-menu">
                 <li class="header">基础管理</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li ui-sref="common-config" id="li-common-config"><a href=""><i class="fa fa-dashboard"></i><span>基础配置</span></a></li>
+                <li ui-sref="common-config" id="li-common-config" ng-class='{active : isActive}' ng-click='isSelected()'><a href=""><i class="fa fa-dashboard"></i><span>基础配置</span></a></li>
                 <li><a href="#"><i class="fa fa-edit"></i><span>服务器配置</span></a></li>
-                <li ui-sref="menu-manage" id="li-menu-manage"><a href="" ><i class="fa fa-table"></i><span>自定义菜单</span></a></li>
+                <li ui-sref="menu-manage" id="li-menu-manage" ng-class='{active : isActive}' ng-click='isSelected()'><a href="" ><i class="fa fa-table"></i><span>自定义菜单</span></a></li>
                 <li><a href="#"><i class="fa fa-user"></i><span>自动回复配置</span></a></li>
                 <li><a href="#"><i class="fa fa-th"></i><span>素材管理</span></a></li>
                 <li class="header">自定义功能</li>

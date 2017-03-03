@@ -15,14 +15,16 @@ import java.io.IOException;
  * Created by Trialiet on 2016/10/12.
  */
 @Controller
-@RequestMapping("/wechat")
+@RequestMapping("/wechat/*")
 public class WechatController {
     @Autowired
     private WechatService wechatService;
 
     @RequestMapping(method = {RequestMethod.GET})
     @ResponseBody
-    public String checkSignature(Wechat wechat) throws IOException {
+    public String checkSignature(Wechat wechat, HttpServletRequest request) throws IOException {
+        String path = request.getServletPath();
+        String wxid = path.substring(path.lastIndexOf("/"));
         if(wechat.check()) return wechat.getEchostr();
         else {
             return "Invalid Access";
