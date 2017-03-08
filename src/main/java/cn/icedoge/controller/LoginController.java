@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class LoginController {
-    @RequestMapping(value = "/login/auth", method = RequestMethod.POST)
+    @RequestMapping(value = "/login/auth")
     public String login(User user){
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getUser_name(), user.getUser_password());
-        Subject currentUser = SecurityUtils.getSubject();
-        currentUser.login(token);
-        if (currentUser.isAuthenticated()){
-            return "index";
-        }else {
-            return "error";
-        }
+//        UsernamePasswordToken token = new UsernamePasswordToken(user.getUser_name(), user.getUser_password());
+//        Subject currentUser = SecurityUtils.getSubject();
+//        currentUser.login(token);
+//        if (currentUser.isAuthenticated()){
+//            return "index";
+//        }else {
+//            return "error";
+//        }
+        return "index";
     }
     @RequestMapping("/login")
     public String nav(){
