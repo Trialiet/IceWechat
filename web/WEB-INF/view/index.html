@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html  ng-app="wechat">
 <head>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" charset="utf-8">
-    <title>Test HTML Page</title>
+    <title>Home Page</title>
     <!-- Tell the browser to be responsive to screen width -->
     <!-- Bootstrap 3.3.6 -->
     <link rel="stylesheet" type="text/css"
@@ -33,12 +33,11 @@
     <script src="//cdn.bootcss.com/angular-ui-router/1.0.0-rc.1/angular-ui-router.js"></script>
     <!-- Angular Router-->
     <!--<script src="//cdn.bootcss.com/angular.js/1.6.2/angular-route.js"></script>-->
-    <!-- app.js-->
-    <script src="../resource/adminlte/js/app.js"></script>
     <script src="../resource/js/icewechat-app.js"></script>
+    <script src="../resource/js/icewechat-service.js"></script>
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body class="hold-transition skin-blue sidebar-mini" ng-app="wechat">
+<body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
     <header class="main-header">
         <a href="#" class="logo">
@@ -117,15 +116,16 @@
             <ul class="sidebar-menu">
                 <li class="header">基础管理</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li ui-sref="common-config" id="li-common-config" ng-class='{active : isActive}' ng-click='isSelected()'><a href=""><i class="fa fa-dashboard"></i><span>基础配置</span></a></li>
-                <li><a href="#"><i class="fa fa-edit"></i><span>服务器配置</span></a></li>
-                <li ui-sref="menu-manage" id="li-menu-manage" ng-class='{active : isActive}' ng-click='isSelected()'><a href="" ><i class="fa fa-table"></i><span>自定义菜单</span></a></li>
-                <li><a href="#"><i class="fa fa-user"></i><span>自动回复配置</span></a></li>
-                <li><a href="#"><i class="fa fa-th"></i><span>素材管理</span></a></li>
-                <li class="header">自定义功能</li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-laptop"></i><span>功能一</span> <i class="fa fa-angle-left pull-right"></i></a>
-                </li>
+                <li ng-repeat="sidebarMenu in sidebarMenus" ui-sref="{{sidebarMenu.sidebar_menu_sref}}" ><a href=""><i class="{{sidebarMenu.sidebar_menu_icon}}"><span>{{sidebarMenu.sidebar_menu_name}}</span></i> </a> </li>
+                <!--<li ui-sref="common-config" id="li-common-config" ng-class='{active : isActive}' ng-click='isSelected()'><a href=""><i class="fa fa-dashboard"></i><span>基础配置</span></a></li>-->
+                <!--<li><a href="#"><i class="fa fa-edit"></i><span>服务器配置</span></a></li>-->
+                <!--<li ui-sref="menu-manage" id="li-menu-manage" ng-class='{active : isActive}' ng-click='isSelected()'><a href="" ><i class="fa fa-table"></i><span>自定义菜单</span></a></li>-->
+                <!--<li><a href="#"><i class="fa fa-user"></i><span>自动回复配置</span></a></li>-->
+                <!--<li><a href="#"><i class="fa fa-th"></i><span>素材管理</span></a></li>-->
+                <!--<li class="header">自定义功能</li>-->
+                <!--<li class="treeview">-->
+                    <!--<a href="#"><i class="fa fa-laptop"></i><span>功能一</span> <i class="fa fa-angle-left pull-right"></i></a>-->
+                <!--</li>-->
             </ul><!-- /.sidebar-menu -->
         </section><!-- /.sidebar -->
     </aside>

@@ -66,7 +66,7 @@ public class Wechat {
     }
 
     public boolean check(){
-        return check(WechatConfig.getConfig(WechatConfig.TOKEN));
+        return check(WechatConfig.getConfig("icedog", WechatConfig.TOKEN));
     }
 
     public boolean check(String token){

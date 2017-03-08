@@ -1,9 +1,11 @@
 package cn.icedoge.wechat.custom;
 
+import cn.icedoge.wechat.WechatResponse;
+
 /**
  * Created by Trialiet on 2016/10/25.
  */
-public class BaseCustom {
+public class BaseCustom extends WechatResponse{
     private String touser;
     private String msgtype;
 

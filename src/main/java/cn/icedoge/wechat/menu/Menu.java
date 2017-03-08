@@ -1,11 +1,13 @@
 package cn.icedoge.wechat.menu;
 
+import cn.icedoge.wechat.WechatResponse;
+
 import java.util.Set;
 
 /**
  * Created by Trialiet on 2016/10/19.
  */
-public class Menu {
+public class Menu extends WechatResponse{
     private Set<Button> button;
 
     public void addButton(Button sub_button){

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 
 /**
  * Created by Trialiet on 2016/10/19.
@@ -43,33 +44,61 @@ import java.security.GeneralSecurityException;
 
 @Component
 public class WechatUtil {
+
     private static Logger logger = Logger.getLogger(WechatUtil.class);
     private static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=SECRET";
     public static final String DEFAULT_TYPE = "cn.icedoge.wechat.WechatResponse";
+    public static final String ACCESS_TOKEN_TYPE = "cn.icedoge.wechat.sys.AccessToken";
     public static final String NEWS_TYPE = "cn.icedoge.wechat.material.News";
     public static final String VIDEO_TYPE = "cn.icedoge.wechat.material.Video";
     public static final String ADD_MATERIAL_TYPE = "cn.icedoge.wechat.material.BaseMedia";
+    public static final String MENU_TYPE = "cn.icedoge.wechat.menu.Menu";
 
-    protected WechatResponse HttpGetHandler(String url){
+    protected WechatResponse HttpGetHandler(String path, String type){
+        WechatResponse msg;
+        String url = path;
+        //如果不是获取token的请求，就替换掉URL里的token
+        if(!type.equals(ACCESS_TOKEN_TYPE)){
+            url = path.replace("ACCESS_TOKEN", WechatConfig.getAccessToken("icedog"));
+        }
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         try {
             CloseableHttpResponse response = client.execute(httpGet);
+            //如果网络有问题（状态码不是200），就返回null
             if (response.getStatusLine().getStatusCode() != 200) {
                 logger.debug("Http Get Error");
                 response.close();
                 return null;
             }
+            //获取微信服务器响应的entity
             HttpEntity entity = response.getEntity();
-            WechatResponse wechatResponse = new ObjectMapper().readValue(EntityUtils.toString(entity), AccessToken.class);
+            msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
+            //如果entity的信息表示token过期，就获取新token重新请求
+            if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
+                //获取新token
+                String newToken = getAccessToken().getAccess_token();
+                url = url.replace("ACCESS_TOKEN", newToken);
+                //把新token存到配置文件
+                WechatConfig.setAccessToken("icedog", newToken);
+                httpGet.releaseConnection();
+                client.close();
+                return HttpGetHandler(url, type);
+            }
             response.close();
             client.close();
-            return wechatResponse;
+            return msg;
         }catch (Exception e){
             logger.debug("Something wrong");
             e.printStackTrace();
+        }finally {
+            httpGet.releaseConnection();
         }
         return null;
+    }
+
+    protected WechatResponse HttpGetHandler(String path){
+        return HttpGetHandler(path, ACCESS_TOKEN_TYPE);
     }
 
     protected WechatResponse HttpPostHandler(String url, String jsonData){
@@ -79,8 +108,7 @@ public class WechatUtil {
     protected WechatResponse HttpPostHandler(String path, String jsonData, String type){
         WechatResponse msg = null;
         CloseableHttpClient client = null;
-        String access_token = WechatConfig.getAccessToken();
-        String url = path.replace("ACCESS_TOKEN", access_token);
+        String url = path.replace("ACCESS_TOKEN", WechatConfig.getAccessToken("icedog"));
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-type", "application/json; charset=utf-8");
         post.setHeader("Accept", "application/json");
@@ -102,11 +130,11 @@ public class WechatUtil {
             msg = (WechatResponse) new ObjectMapper().readValue(EntityUtils.toString(entity), Class.forName(type));
             if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
                 String newToken = getAccessToken().getAccess_token();
-                String newUrl = url.replace(access_token, newToken);
-                WechatConfig.setAccessToken(newToken);
+                url = path.replace("ACCESS_TOKEN", newToken);
+                WechatConfig.setAccessToken("icedog", newToken);
                 post.releaseConnection();
                 client.close();
-                return HttpPostHandler(newUrl, jsonData, type);
+                return HttpPostHandler(url, jsonData, type);
             }
             return msg;
         }catch (Exception e){
@@ -116,7 +144,7 @@ public class WechatUtil {
             try {
                 response.close();
                 client.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -124,7 +152,7 @@ public class WechatUtil {
     }
 
     public File GetMaterial(String path, BaseMedia baseMedia, String filePath){
-        String accessToken = WechatConfig.getAccessToken();
+        String accessToken = WechatConfig.getAccessToken("icedog");
         String url = path.replace("ACCESS_TOKEN", accessToken);
         File file = null;
         InputStream stream = null;
@@ -164,7 +192,7 @@ public class WechatUtil {
 
     public BaseMedia PostMaterial(String path, File file, String type){
         BaseMedia msg = null;
-        String access_token = WechatConfig.getAccessToken();
+        String access_token = WechatConfig.getAccessToken("icedog");
         String url = path.replace("ACCESS_TOKEN", access_token);
         HttpPost post = new HttpPost(url);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -189,7 +217,7 @@ public class WechatUtil {
             if(msg.getErrcode() != null && (msg.getErrcode() == 40014 || msg.getErrcode() == 42001 || msg.getErrcode() == 40001)){
                 String newToken = getAccessToken().getAccess_token();
                 String newUrl = url.replace(access_token, newToken);
-                WechatConfig.setAccessToken(newToken);
+                WechatConfig.setAccessToken("icedog", newToken);
                 post.releaseConnection();
                 client.close();
                 return PostMaterial(newUrl, file, type);
@@ -203,8 +231,8 @@ public class WechatUtil {
 
     private AccessToken getAccessToken()
     {
-        String url = ACCESS_TOKEN_URL.replace("APPID", WechatConfig.getConfig(WechatConfig.APPID))
-                .replace("SECRET", WechatConfig.getConfig(WechatConfig.SECRET));
+        String url = ACCESS_TOKEN_URL.replace("APPID", WechatConfig.getConfig("icedog", WechatConfig.APPID))
+                .replace("SECRET", WechatConfig.getConfig("icedog", WechatConfig.SECRET));
         try {
             return (AccessToken) HttpGetHandler(url);
         } catch (Exception e) {

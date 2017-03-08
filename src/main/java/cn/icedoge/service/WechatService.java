@@ -4,14 +4,12 @@ package cn.icedoge.service;
 import cn.icedoge.wechat.Wechat;
 import cn.icedoge.wechat.custom.CustomText;
 import cn.icedoge.wechat.material.BaseMedia;
+import cn.icedoge.wechat.menu.Menu;
 import cn.icedoge.wechat.message.BaseMessage;
 import cn.icedoge.wechat.message.TextMessage;
 import cn.icedoge.wechat.message.processor.MessageFilter;
 import cn.icedoge.wechat.message.processor.MessageHandler;
-import cn.icedoge.wechat.util.CustomManager;
-import cn.icedoge.wechat.util.MaterialManager;
-import cn.icedoge.wechat.util.WechatConfig;
-import cn.icedoge.wechat.util.WechatUtil;
+import cn.icedoge.wechat.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +24,14 @@ public class WechatService {
     @Autowired
     private CustomManager customManager;
     @Autowired
-    private MaterialManager materialManager;
+    private MenuManager menuManager;
+
+    public Menu fetchMenu(){
+        return (Menu)menuManager.fetchMenu();
+    }
+
 //    public void createMenu(Menu menu){
-//        AccessToken accessToken = util.getAccessToken(APPID, SECRET);
+//        AccessToken accessToken = util.getAccess_token(APPID, SECRET);
 //        util.createMenu(menu, accessToken);
 //    }
 
